@@ -1,4 +1,5 @@
 
+User
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -6,24 +7,18 @@ const nodemailer = require('nodemailer');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ||3000;
 
 // Enable CORS for all routes
 app.use(cors());
 app.get("/",(req,res)=>{
-  res.send("HELLO, IT'S WORKING");
+  res.send("HELL ITS WORKING");
 })
 
 app.use(bodyParser.json());
 
 // MongoDB setup (replace 'your_mongo_connection_string' with your actual MongoDB connection string)
-mongoose.connect('mongodb+srv://swati:swati0920@cluster0.j7atkns.mongodb.net/?retryWrites=true&w=majority', {})
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
-  });
+mongoose.connect('mongodb+srv://swati:swati0920@cluster0.j7atkns.mongodb.net/?retryWrites=true&w=majority', { });
 
 // Define a user schema and model
 const userSchema = new mongoose.Schema({
@@ -56,10 +51,7 @@ app.post('/send-otp', async (req, res) => {
       { email },
       { otp, isVerified: false },
       { new: true, upsert: true }
-    ).catch((error) => {
-      console.error('Error updating user:', error);
-      res.status(500).json({ error: 'Error updating user' });
-    });
+    );
 
     // Send the OTP to the user's email
     const mailOptions = {
@@ -69,22 +61,18 @@ app.post('/send-otp', async (req, res) => {
       text: `Your OTP for verification is: ${otp}`,
     };
 
-    function sendMailWithRetry() {
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error sending OTP email:', error);
-          res.status(500).json({ error: 'Error sending OTP email' });
-        } else {
-          console.log('OTP sent:', info.response);
-          res.status(200).json({ message: 'OTP sent successfully' });
-        }
-      });
-    }
-
-    sendMailWithRetry();
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending OTP email:', error);
+        res.status(500).json({ error: 'Error sending OTP email' });
+      } else {
+        console.log('OTP sent:', info.response);
+        res.status(200).json({ message: 'OTP sent successfully' });
+      }
+    });
   } catch (error) {
     console.error('Error in /send-otp:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    return  res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -105,9 +93,11 @@ app.post('/verify-otp', async (req, res) => {
     }
   } catch (error) {
     console.error('Error in /verify-otp:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
 
 // Endpoint to get the list of colleges
 app.get('/colleges', (req, res) => {
@@ -115,6 +105,8 @@ app.get('/colleges', (req, res) => {
   const colleges = require('./colleges.json');
   res.json(colleges);
 });
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
