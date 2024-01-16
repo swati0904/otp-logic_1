@@ -5,10 +5,13 @@ const nodemailer = require('nodemailer');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT ;
 
 // Enable CORS for all routes
 app.use(cors());
+app.get("/",(req,res)=>{
+  res.send("HELL ITS WORKING");
+})
 
 app.use(bodyParser.json());
 
